@@ -1,30 +1,27 @@
 import { useState, useEffect, useRef } from "react";
 
-const useConfirm = (message='', onConfirm, onCancel) => {
-  if (!onConfirm || typeof onConfirm !== "function") {
-    return;
-  }
-  if (onCancel && typeof onCancel !== "function") {
-    return;
-  }
-  const confirmAction = () => {
-    if(window.confirm(message)){
-      onConfirm();
-    } else {
-      onCancel();
+const useBeforeLeave = (onBeforeLeave) => {
+  useEffect(() => {
+    const handleBeforeLeave = (event) => {
+      if(event.clientY <= 0){
+        onBeforeLeave();
+      }
+    };
+    document.addEventListener('mouseleave', handleBeforeLeave);
+    return () => {
+      document.removeEventListener('mouseleave', handleBeforeLeave);
     }
-  };
-  return confirmAction;
+  }, [onBeforeLeave])
 }
 
 function App() {
-  const deleteWorld = () => console.log("Deleting the world...");
-  const abort = () => console.log("Aborted");
-  const confirmDelete = useConfirm("Are you sure?", deleteWorld, abort);
+  const beforeLeave = () => {
+    console.log("Don't leave!!");
+  }
+  useBeforeLeave(beforeLeave)
   return (
     <div>
-      <h1>useConfirm</h1>
-      <button onClick={confirmDelete}>Delete the world</button>
+      <h1>useBeforeLeave</h1>
     </div>
   );
 }
