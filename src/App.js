@@ -1,27 +1,26 @@
 import { useState, useEffect, useRef } from "react";
 
-const useBeforeLeave = (onBeforeLeave) => {
+const useFadeIn = (duration = 1, delay = 0) => {
+  const [opacity, setOpacity] = useState(0);
+
   useEffect(() => {
-    const handleBeforeLeave = (event) => {
-      if(event.clientY <= 0){
-        onBeforeLeave();
-      }
-    };
-    document.addEventListener('mouseleave', handleBeforeLeave);
-    return () => {
-      document.removeEventListener('mouseleave', handleBeforeLeave);
-    }
-  }, [onBeforeLeave])
-}
+    const fadeInTimer = setTimeout(() => {
+      setOpacity(1);
+    }, delay * 1000);
+    return () => clearTimeout(fadeInTimer);
+  }, [delay]);
+
+  return { 
+    opacity,
+    transition: `opacity ${duration}s ease-in-out` 
+  };
+};
 
 function App() {
-  const beforeLeave = () => {
-    console.log("Don't leave!!");
-  }
-  useBeforeLeave(beforeLeave)
+  const { opacity, transition } = useFadeIn(3, 1);
   return (
-    <div>
-      <h1>useBeforeLeave</h1>
+    <div style={{ opacity, transition }}>
+      <h1>useFadeIn</h1>
     </div>
   );
 }
