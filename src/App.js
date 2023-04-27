@@ -1,26 +1,29 @@
 import { useState, useEffect, useRef } from "react";
 
-const useFadeIn = (duration = 1, delay = 0) => {
-  const [opacity, setOpacity] = useState(0);
+const useNetwork = (onChange) => {
+  const [status, setStatus] = useState(navigator.onLine);
+
+  const handleStatusChange = () => {
+    setStatus(navigator.onLine);
+  }
 
   useEffect(() => {
-    const fadeInTimer = setTimeout(() => {
-      setOpacity(1);
-    }, delay * 1000);
-    return () => clearTimeout(fadeInTimer);
-  }, [delay]);
-
-  return { 
-    opacity,
-    transition: `opacity ${duration}s ease-in-out` 
-  };
-};
+    window.addEventListener('online', handleStatusChange);
+    window.addEventListener('offline', handleStatusChange);
+    return () => {
+      window.removeEventListener('online', handleStatusChange);
+      window.removeEventListener('offline', handleStatusChange);
+    }
+  });
+  return status;
+}
 
 function App() {
-  const { opacity, transition } = useFadeIn(3, 1);
+  const onLine = useNetwork();
   return (
-    <div style={{ opacity, transition }}>
-      <h1>useFadeIn</h1>
+    <div>
+      <h1>useNetwork</h1>
+      <h2>{onLine ? "online" : "offline"}</h2>
     </div>
   );
 }
