@@ -1,28 +1,31 @@
 import { useState, useEffect, useRef } from "react";
 
-const useScroll = () => {
-  const [scrollPos, setScrollPos] = useState(window.scrollY);
+const useFullscreen = () => {
+  const element = useRef();
 
-  const handleScroll = () => {
-    setScrollPos(window.scrollY);
-  }
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
+  const enterFullscreen = () => {
+    if(element.current){
+      element.current.requestFullscreen();
     }
-  }, []);
+  };
 
-  return scrollPos
+  const exitFullscreen = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+  };
+
+  return { element, enterFullscreen, exitFullscreen };
 }
 
 function App() {
-  const Y = useScroll();
-  const backgroundColor = `rgb(0, ${Y % 255}, ${Y % 255})`;
+  const {element, enterFullscreen, exitFullscreen } = useFullscreen();
   return (
-    <div style={{ height: '200vh', backgroundColor }}>
-      <h1>useNetwork</h1>
+    <div ref={element}>
+      <h1>useFullscreen</h1>
+      <img src="https://legacy.reactjs.org/logo-og.png" />
+      <button onClick={enterFullscreen} >enter</button>
+      <button onClick={exitFullscreen} >exit</button>
     </div>
   );
 }
