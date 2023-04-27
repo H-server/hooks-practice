@@ -1,31 +1,31 @@
 import { useState, useEffect, useRef } from "react";
 
-const useFullscreen = () => {
-  const element = useRef();
-
-  const enterFullscreen = () => {
-    if(element.current){
-      element.current.requestFullscreen();
+const useNotification = (title, options) => {
+  if (!("Notification" in window)) {
+    return;
+  }
+  const fireNotif = () => {
+    if(Notification.permission !== "granted"){
+      Notification.requestPermission().then(permission => {
+        if(permission === "granted"){
+          new Notification(title, options);
+        }
+      });
+    } else {
+      new Notification(title, options);
     }
-  };
-
-  const exitFullscreen = () => {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    }
-  };
-
-  return { element, enterFullscreen, exitFullscreen };
+  }
+  return fireNotif;
 }
 
 function App() {
-  const {element, enterFullscreen, exitFullscreen } = useFullscreen();
+  const fireNotif = useNotification('hi', {
+    body: "This is a notification.",
+  });
   return (
-    <div ref={element}>
-      <h1>useFullscreen</h1>
-      <img src="https://legacy.reactjs.org/logo-og.png" />
-      <button onClick={enterFullscreen} >enter</button>
-      <button onClick={exitFullscreen} >exit</button>
+    <div>
+      <h1>useNotification</h1>
+      <button onClick={fireNotif}>alarm</button>
     </div>
   );
 }
