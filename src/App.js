@@ -1,29 +1,28 @@
 import { useState, useEffect, useRef } from "react";
 
-const useNetwork = (onChange) => {
-  const [status, setStatus] = useState(navigator.onLine);
+const useScroll = () => {
+  const [scrollPos, setScrollPos] = useState(window.scrollY);
 
-  const handleStatusChange = () => {
-    setStatus(navigator.onLine);
+  const handleScroll = () => {
+    setScrollPos(window.scrollY);
   }
 
   useEffect(() => {
-    window.addEventListener('online', handleStatusChange);
-    window.addEventListener('offline', handleStatusChange);
+    window.addEventListener('scroll', handleScroll);
     return () => {
-      window.removeEventListener('online', handleStatusChange);
-      window.removeEventListener('offline', handleStatusChange);
+      window.removeEventListener('scroll', handleScroll);
     }
-  });
-  return status;
+  }, []);
+
+  return scrollPos
 }
 
 function App() {
-  const onLine = useNetwork();
+  const Y = useScroll();
+  const backgroundColor = `rgb(0, ${Y % 255}, ${Y % 255})`;
   return (
-    <div>
+    <div style={{ height: '200vh', backgroundColor }}>
       <h1>useNetwork</h1>
-      <h2>{onLine ? "online" : "offline"}</h2>
     </div>
   );
 }
